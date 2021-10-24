@@ -1,9 +1,10 @@
-import {useRef} from "react";
+import {useState, useRef} from "react";
 
-const Feedback = () => {
+const Feedback = (props) => {
+    const [feedbacks, setFeedbacks] = useState(props.feedbacks);
+
     const emailRef = useRef('');
     const detailRef = useRef('');
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,14 +18,19 @@ const Feedback = () => {
                 'Content-Type': 'application/json'
             }
         });
-        const data = resp.json();
-
-        console.log(data);
+        const data = await resp.json();
+        setFeedbacks(prevData => ([...prevData, data.feedback]));
     };
 
     return (
         <div className='feedback-page'>
             <h1>Feedback Page</h1>
+
+            <div className='all-feedbacks'>
+                {feedbacks.map(feedback => <p>{feedback.email}</p>)}
+            </div>
+
+
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email">Email</label><br/>
@@ -41,6 +47,19 @@ const Feedback = () => {
             </form>
         </div>
     );
+}
+
+export async function getStaticProps() {
+    const resp = await fetch('http://localhost:3000/api/feedback', {
+        method: 'GET',
+    });
+    const data = await resp.json();
+
+    return {
+        props: {
+            feedbacks: data.feedbacks
+        }
+    }
 }
 
 export default Feedback;

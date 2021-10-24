@@ -3,6 +3,15 @@ import fs from 'fs';
 
 function handler(req, res) {
 
+    if (req.method === 'GET') {
+
+        // Write the new feedback to a new file
+        const filePath = path.join(process.cwd(), 'data', 'feedback.json');
+        const fileData = fs.readFileSync(filePath);
+        const feedbacks = JSON.parse(fileData);
+        res.status(201).json({feedbacks});
+    }
+
     if (req.method === 'POST') {
         const {email, detail} = req.body;
         const newFeedback = {
