@@ -2,6 +2,7 @@ import {useState, useRef} from "react";
 
 const Feedback = (props) => {
     const [feedbacks, setFeedbacks] = useState(props.feedbacks);
+    const [selectedFeedback, setSelectedFeedback] = useState(null);
 
     const emailRef = useRef('');
     const detailRef = useRef('');
@@ -22,12 +23,26 @@ const Feedback = (props) => {
         setFeedbacks(prevData => ([...prevData, data.feedback]));
     };
 
+    const handleLoadFeedbackDetails = async (feedbackId) => {
+        const resp = await fetch(`http://localhost:3000/api/feedback/${feedbackId}`, {
+            method: 'GET',
+        });
+        const data = await resp.json();
+        setSelectedFeedback(data.feedback);
+    }
+
+
     return (
         <div className='feedback-page'>
             <h1>Feedback Page</h1>
-
+            {selectedFeedback && <div>
+                <p>{selectedFeedback.email}</p>
+                <p>{selectedFeedback.detail}</p>
+            </div>}
             <div className='all-feedbacks'>
-                {feedbacks.map(feedback => <p>{feedback.email}</p>)}
+                {feedbacks.map(feedback => <div style={{display: 'flex', alignItems: 'center'}}><p>{feedback.email}</p>
+                    <button onClick={() => handleLoadFeedbackDetails(feedback.id)}>Details</button>
+                </div>)}
             </div>
 
 
