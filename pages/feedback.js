@@ -5,14 +5,21 @@ const Feedback = () => {
     const detailRef = useRef('');
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Will send request to backend here...
-
         const email = emailRef.current.value;
         const detail = detailRef.current.value;
 
-        console.log({email, detail});
+        const resp = await fetch('/api/feedback', {
+            method: 'POST',
+            body: JSON.stringify({email, detail}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = resp.json();
+
+        console.log(data);
     };
 
     return (
